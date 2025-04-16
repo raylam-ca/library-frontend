@@ -5,33 +5,26 @@ import { createTask, updateTask } from '../utils/api';
 import { useRouter } from 'next/navigation';
 
 interface TaskFormProps {
-  task?: any;
+  task?: { id: number; title: string; description: string; completed: boolean };
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({ task }) => {
   const [title, setTitle] = useState<string>(task?.title || '');
   const [description, setDescription] = useState<string>(task?.description || '');
-  const [completed, setCompleted] = useState<boolean>(task?.completed || false); // Default to false (boolean)
-  
+  const [completed, setCompleted] = useState<boolean>(task?.completed || false);
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const taskData = { title, description, completed };
 
-    const taskData = {
-      title,
-      description,
-      completed,
-    };
-
-    // Call createTask or updateTask depending on whether task is passed in or not
     if (task) {
       await updateTask(task.id, taskData);
     } else {
       await createTask(taskData);
     }
 
-    // Redirect to tasks page after creating/updating task
     router.push('/tasks');
   };
 
