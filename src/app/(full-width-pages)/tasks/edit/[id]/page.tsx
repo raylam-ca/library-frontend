@@ -3,16 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { fetchTaskById, updateTask } from '@/utils/api';
 import { Task } from '@/utils/api';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
-interface EditTaskPageProps {
-  params: {
-    id: string;
-  };
-}
-
-const EditTaskPage: React.FC<EditTaskPageProps> = ({ params }) => {
-  const { id } = React.use(params); // Get the ID from the URL params
+const EditTaskPage: React.FC = () => {
+  const { id } = useParams();  // Get the ID from the URL params using useParams()
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [formData, setFormData] = useState({
@@ -26,23 +20,23 @@ const EditTaskPage: React.FC<EditTaskPageProps> = ({ params }) => {
   useEffect(() => {
     const getTask = async () => {
       setLoading(true);
-      const taskData = await fetchTaskById(Number(id)); // Fetch the task details by ID
-      if (taskData) {
-        setTask(taskData);
-        setFormData({
-          title: taskData.title,
-          description: taskData.description,
-          completed: taskData.completed,
-        });
-      } else {
-        alert('Task not found');
+      if (id) {
+        const taskData = await fetchTaskById(Number(id)); // Fetch the task details by ID
+        if (taskData) {
+          setTask(taskData);
+          setFormData({
+            title: taskData.title,
+            description: taskData.description,
+            completed: taskData.completed,
+          });
+        } else {
+          alert('Task not found');
+        }
       }
       setLoading(false);
     };
 
-    if (id) {
-      getTask();
-    }
+    getTask();
   }, [id]);
 
   // Handle input changes
